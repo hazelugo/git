@@ -40,9 +40,29 @@
         <h3>Summary</h3>
         <ul id="summaryList" class="list"></ul>
     </section>
-  </Card>
-    </main>
+</Card>
 </template>
 
 <style scoped>
+.rowForm {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+input, select {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #c7d2fe;
+}
+
+button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #4f46e5;
+  color: #fff;
+  cursor: pointer;
+}
 </style>
