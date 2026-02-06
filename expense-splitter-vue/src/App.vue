@@ -1,42 +1,96 @@
 <script setup>
+  import {ref, computed} from 'vue'
   import Header from './components/Header.vue'
   import Card from './components/Card.vue'
   import Section from './components/Section.vue'
+import { esmExternalRequirePlugin } from 'vite'
+
+  const people = ref([])
+  const newPerson = ref('')
+
+  const addPerson = () => {
+    const name = newPerson.value.trim()
+
+    if(!name) return
+    
+    people.value.push(name)
+    newPerson.value = ''
+  }
+
+  const expenses = ref([])
+  const newExpense = ref({
+  desc: '',
+  amount: 0,
+  paidBy: ''
+})
+
+  const addExpense = () => {
+    const {desc, amount, paidBy} = newExpense.value
+
+    if(!desc.trim() || isNaN(parseFloat(amount)) || !paidBy) return
+
+    expenses.value.push({
+      desc: desc.trim(),
+      amount: parseFloat(amount),
+      paidBy
+    })
+
+    newExpense.value = {
+      desc: '',
+      amount: 0,
+      paidBy: ''
+    }
+  }
+
+  const total = computed(() => {
+    return expenses.value.reduce((total, expense) => total + expense.amount, 0).toFixed(2)
+  })
+
 </script>
 
 <template>
   <Header/>
   <Card>
-    <form id="personForm" class="rowForm">
-        <input id="personInput" type="test" placeholder="Add person name"/>
+    <form id="personForm" class="rowForm" @submit.prevent="addPerson">
+        <input id="personInput" type="test" placeholder="Add person name" v-model="newPerson"/>
         <button>Add Person</button>
     </form>
 
-    <form id="expenseForm" class="rowForm">
-        <input id="descInput" type="text" placeholder="Expense Description"/>
-        <input id="amountInput" type="number" placeholder="Amount"/>
-        <select id="paidBySelect"></select>
+    <form id="expenseForm" class="rowForm" @submit.prevent="addExpense">
+        <input id="descInput" type="text" placeholder="Expense Description" v-model="newExpense.desc"/>
+        <input id="amountInput" type="number" placeholder="Amount" v-model="newExpense.amount"/>
+        <select id="paidBySelect" v-model="newExpense.paidBy">
+          <option v-for="person in people" :key="person" :value="person">{{ person }}</option>
+        </select>
         <button>Add Expense</button>
     </form>
 
-  <Section title="People">
-    <ul id="peopleList" class="list"></ul>
-  </Section>
+    <Section title="People">
+      <ul id="peopleList" class="list">
+        <li v-for="person in people" :key="person">
+          {{ person }}
+        </li>
+      </ul>
+    </Section>
 
-  <Section title="Expense">
-    <ul id="expenseList" class="list"></ul>
-  </Section>
+    <Section title="Expense">
+      <ul id="expenseList" class="list">
+        <li v-for="expense in expenses" :key="expense.paidBy">
+          {{ expense.desc }} - ${{ expense.amount.toFixed(2) }} paid by {{ expense.paidBy }}
+        </li>
+      </ul>
+    </Section>
 
-  <Section title="Total">
-      <p>
-        Total Spent: <strong id="totalSpent">$0.00</strong><br/>
-        Split Per Person: <strong id="splitAmount">$0.00</strong>
-      </p>   
-  </Section>
-  
-  <Section title="Summary">
-        <ul id="summaryList" class="list"></ul>
-  </Section>
+    <Section title="Total">
+        <p>
+          Total Spent: <strong id="totalSpent">${{total}}</strong><br/>
+          Split Per Person: <strong id="splitAmount">$0.00</strong>
+        </p>   
+    </Section>
+    
+    <Section title="Summary">
+          <ul id="summaryList" class="list"></ul>
+    </Section>
 </Card>
 </template>
 
@@ -61,5 +115,26 @@ button {
   background: #4f46e5;
   color: #fff;
   cursor: pointer;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.list li {
+  padding: 10px;
+  border-radius: 10px;
+  background: #f1f5ff;
+  display: flex;
+  justify-content: space-between;
+}
+
+#summaryList li {
+  background: #dcfce7;
+  color: #166534;
 }
 </style>
