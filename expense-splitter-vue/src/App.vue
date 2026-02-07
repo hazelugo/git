@@ -51,15 +51,16 @@
   })
 
   const summaryList = computer(()=> {
-    people.value(map(person => {
+    return people.value.map(person => {
       const totalPaid = expenses.value
         .filter(exp => exp.paidBy === person)
-        .reduce((total, expense)=>total+expense, 0)
+        .reduce((total, expense)=>total+expense.amount, 0)
 
-      const balance = totalPaid - split.value
+      const balance = totalPaid - (total.value / people.value.length)
+      console.log(balance)
 
-      return `${person} ${balance >0 ? 'gets' : 'owes'} ${Math.abs(balance).toFixed(2)}`
-    }))
+      return `${person} ${balance > 0 ? 'gets' : 'owes'} $${Math.abs(balance).toFixed(2)}`
+    })
   })
 </script>
 
