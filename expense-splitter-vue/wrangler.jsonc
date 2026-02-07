@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "expense-splitter-vue",
-  "compatibility_date": "2025-09-27",
+  "compatibility_date": "2026-02-01",
   "observability": {
     "enabled": true
   },
