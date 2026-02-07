@@ -3,7 +3,6 @@
   import Header from './components/Header.vue'
   import Card from './components/Card.vue'
   import Section from './components/Section.vue'
-import { esmExternalRequirePlugin } from 'vite'
 
   const people = ref([])
   const newPerson = ref('')
@@ -46,6 +45,11 @@ import { esmExternalRequirePlugin } from 'vite'
     return expenses.value.reduce((total, expense) => total + expense.amount, 0).toFixed(2)
   })
 
+  const split = computed(()=>{
+    if(people.value.length===0) return '0.00'
+    return (total.value / people.value.length).toFixed(2)
+  })
+
 </script>
 
 <template>
@@ -84,7 +88,7 @@ import { esmExternalRequirePlugin } from 'vite'
     <Section title="Total">
         <p>
           Total Spent: <strong id="totalSpent">${{total}}</strong><br/>
-          Split Per Person: <strong id="splitAmount">$0.00</strong>
+          Split Per Person: <strong id="splitAmount">${{ split }}</strong>
         </p>   
     </Section>
     
