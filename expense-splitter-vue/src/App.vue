@@ -50,6 +50,17 @@
     return (total.value / people.value.length).toFixed(2)
   })
 
+  const summaryList = computer(()=> {
+    people.value(map(person => {
+      const totalPaid = expenses.value
+        .filter(exp => exp.paidBy === person)
+        .reduce((total, expense)=>total+expense, 0)
+
+      const balance = totalPaid - split.value
+
+      return `${person} ${balance >0 ? 'gets' : 'owes'} ${Math.abs(balance).toFixed(2)}`
+    }))
+  })
 </script>
 
 <template>
@@ -92,8 +103,10 @@
         </p>   
     </Section>
     
-    <Section title="Summary">
-          <ul id="summaryList" class="list"></ul>
+    <Section title="Summary">-
+          <ul id="summaryList" class="list">
+            <li v-for="(summary, index) in summaryList" :key="index">{{ summary }}</li>
+          </ul>
     </Section>
 </Card>
 </template>
