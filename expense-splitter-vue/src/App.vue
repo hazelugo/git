@@ -1,84 +1,103 @@
 <script setup>
-  import {ref, computed} from 'vue'
-  import Header from './components/Header.vue'
-  import Card from './components/Card.vue'
-  import Section from './components/Section.vue'
+import { ref, computed } from "vue";
+import Header from "./components/Header.vue";
+import Card from "./components/Card.vue";
+import Section from "./components/Section.vue";
 
-  const people = ref([])
-  const newPerson = ref('')
+const people = ref([]);
+const newPerson = ref("");
 
-  const addPerson = () => {
-    const name = newPerson.value.trim()
+const addPerson = () => {
+  const name = newPerson.value.trim();
 
-    if(!name) return
-    
-    people.value.push(name)
-    newPerson.value = ''
-  }
+  if (!name) return;
 
-  const expenses = ref([])
-  const newExpense = ref({
-  desc: '',
+  people.value.push(name);
+  newPerson.value = "";
+};
+
+const expenses = ref([]);
+const newExpense = ref({
+  desc: "",
   amount: 0,
-  paidBy: ''
-})
+  paidBy: "",
+});
 
-  const addExpense = () => {
-    const {desc, amount, paidBy} = newExpense.value
+const addExpense = () => {
+  const { desc, amount, paidBy } = newExpense.value;
 
-    if(!desc.trim() || isNaN(parseFloat(amount)) || !paidBy) return
+  if (!desc.trim() || isNaN(parseFloat(amount)) || !paidBy) return;
 
-    expenses.value.push({
-      desc: desc.trim(),
-      amount: parseFloat(amount),
-      paidBy
-    })
+  expenses.value.push({
+    desc: desc.trim(),
+    amount: parseFloat(amount),
+    paidBy,
+  });
 
-    newExpense.value = {
-      desc: '',
-      amount: 0,
-      paidBy: ''
-    }
-  }
+  newExpense.value = {
+    desc: "",
+    amount: 0,
+    paidBy: "",
+  };
+};
 
-  const total = computed(() => {
-    return expenses.value.reduce((total, expense) => total + expense.amount, 0).toFixed(2)
-  })
+const total = computed(() => {
+  return expenses.value
+    .reduce((total, expense) => total + expense.amount, 0)
+    .toFixed(2);
+});
 
-  const split = computed(()=>{
-    if(people.value.length===0) return '0.00'
-    return (total.value / people.value.length).toFixed(2)
-  })
+const split = computed(() => {
+  if (people.value.length === 0) return "0.00";
+  return (total.value / people.value.length).toFixed(2);
+});
 
-  const summaryList = computer(()=> {
-    return people.value.map(person => {
-      const totalPaid = expenses.value
-        .filter(exp => exp.paidBy === person)
-        .reduce((total, expense)=>total+expense.amount, 0)
+const summaryList = computed(() => {
+  return people.value.map((person) => {
+    const totalPaid = expenses.value
+      .filter((exp) => exp.paidBy === person)
+      .reduce((total, expense) => total + expense.amount, 0);
 
-      const balance = totalPaid - (total.value / people.value.length)
-      console.log(balance)
+    const balance = totalPaid - total.value / people.value.length;
+    console.log(balance);
 
-      return `${person} ${balance > 0 ? 'gets' : 'owes'} $${Math.abs(balance).toFixed(2)}`
-    })
-  })
+    return `${person} ${balance > 0 ? "gets" : "owes"} $${Math.abs(balance).toFixed(2)}`;
+  });
+});
 </script>
 
 <template>
-  <Header/>
+  <Header />
   <Card>
     <form id="personForm" class="rowForm" @submit.prevent="addPerson">
-        <input id="personInput" type="test" placeholder="Add person name" v-model="newPerson"/>
-        <button>Add Person</button>
+      <input
+        id="personInput"
+        type="text"
+        placeholder="Add person name"
+        v-model="newPerson"
+      />
+      <button>Add Person</button>
     </form>
 
     <form id="expenseForm" class="rowForm" @submit.prevent="addExpense">
-        <input id="descInput" type="text" placeholder="Expense Description" v-model="newExpense.desc"/>
-        <input id="amountInput" type="number" placeholder="Amount" v-model="newExpense.amount"/>
-        <select id="paidBySelect" v-model="newExpense.paidBy">
-          <option v-for="person in people" :key="person" :value="person">{{ person }}</option>
-        </select>
-        <button>Add Expense</button>
+      <input
+        id="descInput"
+        type="text"
+        placeholder="Expense Description"
+        v-model="newExpense.desc"
+      />
+      <input
+        id="amountInput"
+        type="number"
+        placeholder="Amount"
+        v-model="newExpense.amount"
+      />
+      <select id="paidBySelect" v-model="newExpense.paidBy">
+        <option v-for="person in people" :key="person" :value="person">
+          {{ person }}
+        </option>
+      </select>
+      <button>Add Expense</button>
     </form>
 
     <Section title="People">
@@ -92,24 +111,29 @@
     <Section title="Expense">
       <ul id="expenseList" class="list">
         <li v-for="expense in expenses" :key="expense.paidBy">
-          {{ expense.desc }} - ${{ expense.amount.toFixed(2) }} paid by {{ expense.paidBy }}
+          {{ expense.desc }} - ${{ expense.amount.toFixed(2) }} paid by
+          {{ expense.paidBy }}
         </li>
       </ul>
     </Section>
 
     <Section title="Total">
-        <p>
-          Total Spent: <strong id="totalSpent">${{total}}</strong><br/>
-          Split Per Person: <strong id="splitAmount">${{ split }}</strong>
-        </p>   
+      <p>
+        Total Spent: <strong id="totalSpent">${{ total }}</strong
+        ><br />
+        Split Per Person: <strong id="splitAmount">${{ split }}</strong>
+      </p>
     </Section>
-    
-    <Section title="Summary">-
-          <ul id="summaryList" class="list">
-            <li v-for="(summary, index) in summaryList" :key="index">{{ summary }}</li>
-          </ul>
+
+    <Section title="Summary"
+      >-
+      <ul id="summaryList" class="list">
+        <li v-for="(summary, index) in summaryList" :key="index">
+          {{ summary }}
+        </li>
+      </ul>
     </Section>
-</Card>
+  </Card>
 </template>
 
 <style scoped>
@@ -119,7 +143,8 @@
   margin-bottom: 12px;
 }
 
-input, select {
+input,
+select {
   flex: 1;
   padding: 10px;
   border-radius: 10px;
